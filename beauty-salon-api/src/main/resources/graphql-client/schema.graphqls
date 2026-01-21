@@ -1,0 +1,105 @@
+type Accommodation {
+    id: ID!
+    name: String
+    price: Int
+    duration: String
+}
+
+type Master {
+    id: ID!
+    fullName: String
+    phone: String
+    email: String
+    experienceYears: Int
+    accommodations: [Accommodation]
+}
+
+type Appointment {
+    id: ID!
+    accommodation: Accommodation
+    master: Master
+    phone: String
+    startTime: String
+    endTime: String
+    status: String
+    createdAt: String
+}
+
+type AppointmentPage {
+    content: [Appointment]
+    pageNumber: Int
+    pageSize: Int
+    totalElements: Int
+    totalPages: Int
+    last: Boolean
+}
+
+type Query {
+    accommodations: [Accommodation]
+    accommodationById(id: ID!): Accommodation
+
+    masters: [Master]
+    masterById(id: ID!): Master
+
+    appointments(masterId: ID, page: Int = 0, size: Int = 10): AppointmentPage
+    appointmentById(id: ID!): Appointment
+}
+
+input AccommodationInput {
+    name: String!
+    price: Int!
+    duration: String!
+}
+
+input UpdateAccommodationInput {
+    name: String
+    price: Int
+    duration: String
+}
+
+input MasterInput {
+    fullName: String!
+    phone: String!
+    email: String!
+    experienceYears: Int!
+    accommodationIds: [ID!]
+}
+
+input UpdateMasterInput {
+    fullName: String
+    phone: String
+    email: String
+    experienceYears: Int
+    accommodationIds: [ID!]
+}
+
+input AppointmentInput {
+    accommodationId: ID!
+    masterId: ID!
+    phone: String!
+    startTime: String!
+    endTime: String!
+}
+
+input UpdateAppointmentInput {
+    accommodationId: ID
+    masterId: ID
+    phone: String
+    startTime: String
+    endTime: String
+    status: String
+}
+
+type Mutation {
+    createAccommodation(input: AccommodationInput!): Accommodation
+    updateAccommodation(id: ID!, input: UpdateAccommodationInput!): Accommodation
+    deleteAccommodation(id: ID!): ID
+
+    createMaster(input: MasterInput!): Master
+    updateMaster(id: ID!, input: UpdateMasterInput!): Master
+    deleteMaster(id: ID!): ID
+
+    createAppointment(input: AppointmentInput!): Appointment
+    updateAppointment(id: ID!, input: UpdateAppointmentInput!): Appointment
+    deleteAppointment(id: ID!): ID
+}

@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "demo_app"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "beauty-salon:8080"
+          - "notification-service-beauty-salon:8083"
+          - "audit-service-beauty-salon:8082"
+          - "analytics-service-beauty-salon:8081"

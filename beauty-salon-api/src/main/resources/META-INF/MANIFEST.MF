@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+Main-Class: demo.com.beauty_salon_api.BeautySalonApiApplication
+

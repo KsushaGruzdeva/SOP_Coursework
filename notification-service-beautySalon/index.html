@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Система уведомлений RUT-MIIT</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f9; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; }
+        #status { text-align: center; margin-bottom: 20px; font-weight: bold; color: #dc3545; }
+        .notification { padding: 15px; margin-bottom: 10px; border-left: 5px solid; border-radius: 4px; animation: slideIn 0.5s ease-out; }
+        .verdict-GOOD { background-color: #d4edda; border-color: #28a745; color: #155724; }
+        .verdict-BAD { background-color: #f8d7da; border-color: #dc3545; color: #721c24; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Центр уведомлений</h2>
+    <div id="status">Отключено</div>
+    <div id="notifications-area"></div>
+</div>
+
+<script>
+    const statusDiv = document.getElementById('status');
+    const area = document.getElementById('notifications-area');
+    let socket;
+
+    function connect() {
+        // Подключение к нашему новому сервису
+        socket = new WebSocket('ws://localhost:8083/ws/notifications');
+
+        socket.onopen = () => {
+            statusDiv.innerText = 'Подключено к системе событий';
+            statusDiv.style.color = '#28a745';
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("Получено событие:", data);
+
+            if (data.type === 'RATING_UPDATE') {
+                showNotification(data);
+            }
+        };
+
+        socket.onclose = () => {
+            statusDiv.innerText = 'Соединение разорвано. Переподключение...';
+            statusDiv.style.color = '#dc3545';
+            setTimeout(connect, 3000);
+        };
+    }
+
+    function showNotification(data) {
+        const div = document.createElement('div');
+        div.className = `notification verdict-${data.verdict}`;
+        div.innerHTML = `
+            <strong>Услуга ID: ${data.accommodationId}</strong><br>
+            Рейтинг рассчитан: <b>${data.score}</b><br>
+            Вердикт: ${data.verdict}
+        `;
+        area.prepend(div);
+    }
+
+    connect();
+</script>
+</body>
+</html>
